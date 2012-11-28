@@ -1151,18 +1151,22 @@ typename PolyaffineLogDomainDeformableRegistrationFilter<TFixedImage,TMovingImag
 PolyaffineLogDomainDeformableRegistrationFilter<TFixedImage,TMovingImage,TField,TFixedMaskImage,TMovingMaskImage,TWeightImage>
 ::GetInverseDeformationField()
 {
-  //std::cout<<"LogDomainDeformableRegistration::GetInverseDeformationField"<<std::endl;
-    PolyaffineTreeTransformType::Pointer invTransform = PolyaffineTreeTransformType::New();
-    m_PolyaffineTree->GetInverse(invTransform);
-    FixedImagePointer fixedPtr = const_cast< FixedImageType *>( this->GetFixedImage() );
-    invTransform->SetOutputParametersFromImage(fixedPtr);
-    PolyaffineTreeTransformType::VectorFieldPointerType vectorField = invTransform->GetDisplacementFieldAsVectorField(m_EndLevel+1);
-    return vectorField;
-    
-////  m_InverseExponentiator->SetInput( this->GetVelocityField() );
-////  m_InverseExponentiator->GetOutput()->SetRequestedRegion( this->GetVelocityField()->GetRequestedRegion() );
-////  m_InverseExponentiator->Update();
-//  return m_InverseExponentiator->GetOutput();
+
+    //std::cout << "# of children: " << m_PolyaffineTree->GetTransformations() << std::endl;
+    if(m_PolyaffineTree->GetTransformations().IsNotNull()) {
+        PolyaffineTreeTransformType::Pointer invTransform = PolyaffineTreeTransformType::New();
+        m_PolyaffineTree->GetInverse(invTransform);
+        FixedImagePointer fixedPtr = const_cast< FixedImageType *>( this->GetFixedImage() );
+        invTransform->SetOutputParametersFromImage(fixedPtr);
+        PolyaffineTreeTransformType::VectorFieldPointerType vectorField = invTransform->GetDisplacementFieldAsVectorField(m_EndLevel+1);
+        return vectorField;
+    }
+    else {
+        m_InverseExponentiator->SetInput( this->GetVelocityField() );
+        m_InverseExponentiator->GetOutput()->SetRequestedRegion( this->GetVelocityField()->GetRequestedRegion() );
+        m_InverseExponentiator->Update();
+        return m_InverseExponentiator->GetOutput();
+    }
 
 }
 

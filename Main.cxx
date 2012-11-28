@@ -149,7 +149,7 @@ struct arguments
 				uruleStr = "BCH approximation on velocity fields (log-domain)";
 				break;
 			case 1:
-				uruleStr = "Symmetrized BCH approximation on velocity fields (symmetric log-domain)";
+				uruleStr = "unsuported at the moment, Symmetrized BCH approximation on velocity fields (symmetric log-domain)";
 				break;
 			default:
 				uruleStr = "unsuported";
@@ -190,7 +190,7 @@ struct arguments
         <<"  Output polyaffine tree transform file: "<<args.outputPolyaffineTreeTransformFile<<std::endl
 //        <<"  Output new Lambda file: "<<args.outputLambdaNewFile<<std::endl
 //        <<"  Output new C file: "<<args.outputCNewFile<<std::endl
-		<<"  Output correlation matrix file: "<<args.outputCorrelationMatrixFile<<std::endl
+//		<<"  Output correlation matrix file: "<<args.outputCorrelationMatrixFile<<std::endl
 		<<"  Output metric file: "<<args.outputMetricFile<<std::endl
 		<<"  Output harmonic energy file: "<<args.outputHarmonicEnergyFile<<std::endl
 		<<"  Maximum update step length: "<<args.maxStepLength<<std::endl
@@ -211,7 +211,7 @@ void help_callback()
 	std::cout<<std::endl;
 	std::cout<<"Copyright (c) 2011 University of Bern and INRIA"<<std::endl;
 	std::cout<<"Code: Christof Seiler"<<std::endl;
-	std::cout<<"Report bugs to <christof.seiler \\at istb.unibe.ch>"<<std::endl;
+	std::cout<<"Report bugs to <christof.seiler \\at gmail.ch>"<<std::endl;
 	
 	exit( EXIT_FAILURE );
 };
@@ -316,10 +316,10 @@ void parseOpts (int argc, char **argv, struct arguments & args)
 	command.SetOptionLongTag("MaximumUpdateStepLength","max-step-length");
 	command.AddOptionField("MaximumUpdateStepLength","floatval",MetaCommand::FLOAT,true,"2.0");		
 	
-	command.SetOption("UpdateRule","a",false,"Type of update rule. 0: exp(v) <- exp(v) o exp(u) (log-domain), 1: exp(v) <- symmetrized( exp(v) o exp(u) ) (symmetric log-domain)");
+	command.SetOption("UpdateRule","a",false,"Type of update rule. Only type 0 is supported at the moment. 0: exp(v) <- exp(v) o exp(u) (log-domain), 1: exp(v) <- symmetrized( exp(v) o exp(u) ) (symmetric log-domain)");
 	command.SetOptionLongTag("UpdateRule","update-rule");
-	command.AddOptionField("UpdateRule","type",MetaCommand::INT,true,"1");
-	command.SetOptionRange("UpdateRule","type","0","1");
+	command.AddOptionField("UpdateRule","type",MetaCommand::INT,true,"0");
+	command.SetOptionRange("UpdateRule","type","0","0");
 	
 	command.SetOption("GradientType","t",false,"Type of gradient used for computing the demons force. 0 is symmetrized, 1 is fixed image, 2 is warped moving image, 3 is mapped moving image");
 	command.SetOptionLongTag("GradientType","gradient-type");
@@ -383,7 +383,7 @@ void parseOpts (int argc, char **argv, struct arguments & args)
     args.outputPolyaffineTreeTransformFile = command.GetValueAsString("OutputPolyaffineTreeTransformFile","filename");
 //    args.outputLambdaNewFile = command.GetValueAsString("OutputLambdaNewFile","filename");
 //    args.outputCNewFile = command.GetValueAsString("OutputCNewFile","filename");
-	args.outputCorrelationMatrixFile = command.GetValueAsString("OutputCorrelationMatrixFile","filename");
+//	args.outputCorrelationMatrixFile = command.GetValueAsString("OutputCorrelationMatrixFile","filename");
 	args.outputMetricFile = command.GetValueAsString("OutputMetricFile","filename");
 	args.outputHarmonicEnergyFile = command.GetValueAsString("OutputHarmonicEnergyFile", "filename");
 	
@@ -473,19 +473,19 @@ void parseOpts (int argc, char **argv, struct arguments & args)
 //		}
 //	}
 
-	// Change the extension by -correlationMatrix.txt
-	if ( args.outputCorrelationMatrixFile == "OUTPUTIMAGENAME-correlationMatrix-LEVEL.txt" )
-    {
-		if ( pos < args.outputCorrelationMatrixFile.size() )
-		{
-			args.outputCorrelationMatrixFile = args.outputImageFile;
-			args.outputCorrelationMatrixFile.replace(pos, args.outputCorrelationMatrixFile.size(), "-correlationMatrix.txt");
-		}
-		else
-		{
-			args.outputCorrelationMatrixFile = args.outputImageFile + "-correlationMatrix.txt";
-		}
-	}	
+//	// Change the extension by -correlationMatrix.txt
+//	if ( args.outputCorrelationMatrixFile == "OUTPUTIMAGENAME-correlationMatrix-LEVEL.txt" )
+//    {
+//		if ( pos < args.outputCorrelationMatrixFile.size() )
+//		{
+//			args.outputCorrelationMatrixFile = args.outputImageFile;
+//			args.outputCorrelationMatrixFile.replace(pos, args.outputCorrelationMatrixFile.size(), "-correlationMatrix.txt");
+//		}
+//		else
+//		{
+//			args.outputCorrelationMatrixFile = args.outputImageFile + "-correlationMatrix.txt";
+//		}
+//	}	
 	
 	// Change the extension by -metric.txt
 	if ( args.outputMetricFile == "OUTPUTIMAGENAME-metric.txt" )
@@ -1459,70 +1459,70 @@ void LogDomainDemonsRegistrationFunction( arguments args )
 //                CNewAll.push_back(filter->GetCNew());
 //                SigmaNewInverseAll.push_back(filter->GetSigmaNewInverse());
                 				
-				if(!args.outputCorrelationMatrixFile.empty())
-				{
-                    std::cout << "not yet implemented for gaussian mixture tree" << std::endl;
-                    /*
-					QString fileName = args.outputCorrelationMatrixFile.c_str();
-					fileName.remove(".txt");
-					fileName = fileName + "-level" + QString::number(level) + ".txt";	
-					QFile fileCorrelationMatrix(fileName);
-					if( !fileCorrelationMatrix.open(QIODevice::WriteOnly) )
-						std::cout << "Failed to open file." << std::endl;
-					QTextStream streamCorrelationMatrix(&fileCorrelationMatrix);
-					vnl_matrix< BaseRegistrationFilterType::MatrixElementType > corr = filter->ComputeCorrelationsBetweenRegions();
-					for(unsigned int m = 0; m < corr.rows(); ++m) {
-						for(unsigned int n = 0; n < corr.cols(); ++n)
-							streamCorrelationMatrix << corr(m,n) << " ";
-						streamCorrelationMatrix << endl;
-					}
-					fileCorrelationMatrix.close();
-					
-					// visualize correlation using skeleton					
-					vtkSmartPointer<vtkPoints> pts = vtkSmartPointer<vtkPoints>::New();
-					//pts->Allocate(regionCenters.size());
-					for(unsigned int i = 0; i < regionCenters.size(); ++i) {
-						double point[3];
-						regionCenters[i].copy_out(point);
-						pts->InsertNextPoint(point);
-					}
-
-					//vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New();
-					vtkSmartPointer<vtkFloatArray> colors = vtkSmartPointer<vtkFloatArray>::New();
-					colors->SetNumberOfComponents(1);
-					colors->SetName("correlation");
-					
-					vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
-					
-					for(unsigned int m = 0; m < corr.rows(); ++m) {
-						for(unsigned int n = 0; n < corr.cols(); ++n) {
-							
-							//unsigned char grey[3] = {corr(m,n), corr(m,n), corr(m,n)};
-							float c[1] = {corr(m,n)};
-							colors->InsertNextTupleValue(c);
-							
-							vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
-							line->GetPointIds()->SetId(0,m);
-							line->GetPointIds()->SetId(1,n);
-							
-							lines->InsertNextCell(line);
-						}
-					}
-					
-					vtkSmartPointer<vtkPolyData> linesPolyData = vtkSmartPointer<vtkPolyData>::New();
-					linesPolyData->SetPoints(pts);
-					linesPolyData->SetLines(lines);
-					linesPolyData->GetCellData()->SetScalars(colors);
-					
-					vtkSmartPointer< vtkPolyDataWriter > writer = vtkSmartPointer< vtkPolyDataWriter >::New();
-					QString filename = QString("corr-level") + QString::number(level) + QString(".vtk");
-					writer->SetFileName(filename.toAscii());
-					writer->SetFileTypeToBinary();
-					writer->SetInput(linesPolyData);
-					writer->Update();
-                     */
-					
-				}
+//				if(!args.outputCorrelationMatrixFile.empty())
+//				{
+//                    std::cout << "not yet implemented for gaussian mixture tree" << std::endl;
+//                    
+//					QString fileName = args.outputCorrelationMatrixFile.c_str();
+//					fileName.remove(".txt");
+//					fileName = fileName + "-level" + QString::number(level) + ".txt";	
+//					QFile fileCorrelationMatrix(fileName);
+//					if( !fileCorrelationMatrix.open(QIODevice::WriteOnly) )
+//						std::cout << "Failed to open file." << std::endl;
+//					QTextStream streamCorrelationMatrix(&fileCorrelationMatrix);
+//					vnl_matrix< BaseRegistrationFilterType::MatrixElementType > corr = filter->ComputeCorrelationsBetweenRegions();
+//					for(unsigned int m = 0; m < corr.rows(); ++m) {
+//						for(unsigned int n = 0; n < corr.cols(); ++n)
+//							streamCorrelationMatrix << corr(m,n) << " ";
+//						streamCorrelationMatrix << endl;
+//					}
+//					fileCorrelationMatrix.close();
+//					
+//					// visualize correlation using skeleton					
+//					vtkSmartPointer<vtkPoints> pts = vtkSmartPointer<vtkPoints>::New();
+//					//pts->Allocate(regionCenters.size());
+//					for(unsigned int i = 0; i < regionCenters.size(); ++i) {
+//						double point[3];
+//						regionCenters[i].copy_out(point);
+//						pts->InsertNextPoint(point);
+//					}
+//
+//					//vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New();
+//					vtkSmartPointer<vtkFloatArray> colors = vtkSmartPointer<vtkFloatArray>::New();
+//					colors->SetNumberOfComponents(1);
+//					colors->SetName("correlation");
+//					
+//					vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+//					
+//					for(unsigned int m = 0; m < corr.rows(); ++m) {
+//						for(unsigned int n = 0; n < corr.cols(); ++n) {
+//							
+//							//unsigned char grey[3] = {corr(m,n), corr(m,n), corr(m,n)};
+//							float c[1] = {corr(m,n)};
+//							colors->InsertNextTupleValue(c);
+//							
+//							vtkSmartPointer<vtkLine> line = vtkSmartPointer<vtkLine>::New();
+//							line->GetPointIds()->SetId(0,m);
+//							line->GetPointIds()->SetId(1,n);
+//							
+//							lines->InsertNextCell(line);
+//						}
+//					}
+//					
+//					vtkSmartPointer<vtkPolyData> linesPolyData = vtkSmartPointer<vtkPolyData>::New();
+//					linesPolyData->SetPoints(pts);
+//					linesPolyData->SetLines(lines);
+//					linesPolyData->GetCellData()->SetScalars(colors);
+//					
+//					vtkSmartPointer< vtkPolyDataWriter > writer = vtkSmartPointer< vtkPolyDataWriter >::New();
+//					QString filename = QString("corr-level") + QString::number(level) + QString(".vtk");
+//					writer->SetFileName(filename.toAscii());
+//					writer->SetFileTypeToBinary();
+//					writer->SetInput(linesPolyData);
+//					writer->Update();
+//                    
+//					
+//				}
 							
                 itkProbesStop(currLevelStr.str().c_str());
                 itkProbesReport( std::cout );
