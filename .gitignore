@@ -18,3 +18,11 @@ CMakeCache.txt
 PhiTransposePhi.txt
 
 PhiTransposePhiInv.txt
+
+*.mha
+
+output-harmonic-energy.txt
+
+output-metric.txt
+
+*.tfm
