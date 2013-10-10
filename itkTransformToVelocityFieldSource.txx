@@ -253,15 +253,15 @@ template <class TOutputImage, class TTransformPrecisionType>
 void 
 TransformToVelocityFieldSource<TOutputImage,TTransformPrecisionType>
 ::ThreadedGenerateData(
-  const OutputImageRegionType & outputRegionForThread,
-  ThreadIdType threadId )
+  const OutputImageRegionType & outputRegionForThread
+  ) //ThreadIdType threadId
 {
   // Check whether we can use a fast path for resampling. Fast path
   // can be used if the transformation is linear. Transform respond
   // to the IsLinear() call.
   if ( this->m_IncrementalTransform->IsLinear() )
     {
-    this->LinearThreadedGenerateData( outputRegionForThread, threadId );
+    this->LinearThreadedGenerateData( outputRegionForThread ); //, threadId
     return;
     }
 
