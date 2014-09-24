@@ -1,10 +1,8 @@
 Polyaffine Transformation Trees
 ===============================
 
-For instructions and examples please see [this](http://www.stanford.edu/~cseiler/software.html).
+For background information see [this](http://www.stanford.edu/~cseiler/).
 
-An open source copy of the code can be found on github:<br><br>
-<a href="https://github.com/ChristofSeiler/PolyaffineTransformationTrees.git">https://github.com/ChristofSeiler/PolyaffineTransformationTrees.git</a><br><br>
 To build binaries from the source it is required to install the latest ITK version.<br><br>
 
 The code is based on the <a href="http://dx.doi.org/10.1016/j.neuroimage.2008.10.040">Log-Demons algorithm</a> (available on the <a href="http://hdl.handle.net/10380/3060">insight journal website</a> but not required here).
@@ -15,7 +13,7 @@ The main changes that we made are isolated to one method in one class,
 
 This function is called to regularize the estimated SVF after every iteration of the log-demons algorithm. We overwrite this method to estimate the polyaffine transformation tree. The first argument is the unregularized SVF. The second argument is the amount of smoothing applied in the standard Gaussian smoothing step. In our implementation the second arguments is not used.<br><br>
 
-<b>Examples:</b><br><br>
+<b>Examples:</b><br>
 
 The following example command registers a template image to a subject with five levels (-s 5) and 2 voxel dilation of the union of the mask images (-r 2),
 
