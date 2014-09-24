@@ -3,9 +3,7 @@ Polyaffine Transformation Trees
 
 For background information see [this](http://www.stanford.edu/~cseiler/).
 
-To build binaries from the source it is required to install the latest ITK version.<br><br>
-
-The code is based on the <a href="http://dx.doi.org/10.1016/j.neuroimage.2008.10.040">Log-Demons algorithm</a> (available on the <a href="http://hdl.handle.net/10380/3060">insight journal website</a> but not required here).
+To build binaries from the source it is required to install the latest ITK version. The code is based on the <a href="http://dx.doi.org/10.1016/j.neuroimage.2008.10.040">Log-Demons algorithm</a> (available on the <a href="http://hdl.handle.net/10380/3060">insight journal website</a> but not required here).
 
 The main changes that we made are isolated to one method in one class,
 
