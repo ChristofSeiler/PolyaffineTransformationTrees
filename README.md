@@ -7,11 +7,11 @@ To build binaries from the source it is required to install the latest ITK versi
 
 The main changes that we made are isolated to one method in one class,
 
-<pre>itk::PolyaffineLogDomainDeformableRegistrationFilter::SmoothGivenField(VelocityFieldType * field, <br>const double StandardDeviations[ImageDimension]) </pre>
+<pre>itk::PolyaffineLogDomainDeformableRegistrationFilter::SmoothGivenField(VelocityFieldType * field, const double StandardDeviations[ImageDimension]) </pre>
 
-This function is called to regularize the estimated SVF after every iteration of the log-demons algorithm. We overwrite this method to estimate the polyaffine transformation tree. The first argument is the unregularized SVF. The second argument is the amount of smoothing applied in the standard Gaussian smoothing step. In our implementation the second arguments is not used.<br><br>
+This function is called to regularize the estimated SVF after every iteration of the log-demons algorithm. We overwrite this method to estimate the polyaffine transformation tree. The first argument is the unregularized SVF. The second argument is the amount of smoothing applied in the standard Gaussian smoothing step. In our implementation the second arguments is not used.
 
-<b>Examples:</b><br>
+<b>Examples:</b>
 
 The following example command registers a template image to a subject with five levels (-s 5) and 2 voxel dilation of the union of the mask images (-r 2),
 
